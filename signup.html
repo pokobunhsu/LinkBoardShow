@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>註冊頁面</h1>
+    <label for="email">請輸入email:</label>
+    <input type="text" name="email" id="email">
+    <label for="password">請輸入password:</label>
+    <input type="password" name="password" id="password">
+    <button id="signup">註冊</button>
+
+    <script>
+        let server = "http://10.1.1.7:3000"
+        let signupBtn = document.getElementById("signup")
+        let email = document.getElementById("email")
+        let password = document.getElementById("password")
+        signupBtn.addEventListener('click', (e) => {
+            signup()
+        })
+        password.addEventListener('keydown', (e) => {
+            if (e.keyCode === 13) {
+                signup()
+            }
+        })
+        window.onload = () => {
+            if (document.cookie) {
+                alert('您已經登入，導向到大廳')
+                location.href = "./other.html"
+            }
+        }
+
+
+        function signup() {
+            fetch(`${server}/signup`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "email": email.value,
+                    "password": password.value
+                })
+            }).then((res) => {
+                return res.json()
+            }).then((file) => {
+                console.log(file);
+                if (file.code == 0) {
+                    alert('註冊成功,請至登入頁面登入')
+                    location.href = './index.html'
+                } else {
+                    alert(`註冊失敗\n原因:${file.msg}`)
+                }
+            })
+        }
+
+
+    </script>
+</body>
+
+</html>

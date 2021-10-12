@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>已登入</title>
+</head>
+
+<body>
+    <button id="logout">登出</button>
+    <button id="personal">查詢個人資料</button>
+    <script>
+        let logoutBtn = document.querySelector("#logout")
+        let personalBtn = document.querySelector("#personal")
+        logoutBtn.addEventListener('click', () => {
+            document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+            location.reload()
+        })
+        personalBtn.addEventListener('click', () => {
+            location.href = "./personal.html"
+        })
+        if (getCookie('token') == false) {
+            alert('尚未登入')
+            location.href = './index.html'
+        }
+
+
+
+        function getCookie(cookieName) {
+            let name = `${cookieName}=`
+            let AllCookie = document.cookie.split(';')
+            return AllCookie.some(item => item.trim().indexOf(name) == 0)
+        }
+    </script>
+</body>
+
+</html>

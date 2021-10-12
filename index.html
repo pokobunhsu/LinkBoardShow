@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>登入頁面</h1>
+    <label for="email">請輸入email:</label>
+    <input type="text" name="email" id="email">
+    <label for="password">請輸入password:</label>
+    <input type="password" name="password" id="password">
+    <button id="login">登入</button>
+    <a href="./signup.html">我要註冊</a>
+
+    <script>
+        let server = "http://10.1.1.7:3000"
+        let loginBtn = document.getElementById("login")
+        let email = document.getElementById("email")
+        let password = document.getElementById("password")
+        loginBtn.addEventListener('click', (e) => {
+            login()
+        })
+        password.addEventListener('keydown', (e) => {
+            if (e.keyCode === 13) {
+                login()
+            }
+        })
+        window.onload = () => {
+            if (document.cookie) {
+                alert('您已經登入，導向到大廳')
+                location.href = "./other.html"
+            }
+        }
+
+
+        function login() {
+            fetch(`${server}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "email": email.value,
+                    "password": password.value
+                })
+            }).then((res) => {
+                return res.json()
+            }).then((file) => {
+                console.log(file);
+                if (file.token != undefined) {
+                    document.cookie = `token=${file.token};max-age=3600`;
+                    alert('登入成功')
+                    location.href = './other.html'
+                } else {
+                    alert('登入失敗')
+                }
+            })
+        }
+
+
+    </script>
+</body>
+
+</html>

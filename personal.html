@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人資料</title>
+</head>
+
+<body>
+    email: <input type="text" id="email" disabled="disabled"><br>
+    暱稱: <input type="text" id="nickname"><br>
+    手機號碼: <input type="text" id="phone"><br>
+    <button id="edit">修改資料</button><br>
+    <input type="password" id="oldpassword" placeholder="請輸入密碼" style="display: none;">
+    <button id="editOK" style="display: none;">確認</button><br>
+
+    <script>
+        let email = document.querySelector('#email')
+        let nickname = document.querySelector('#nickname')
+        let phone = document.querySelector('#phone')
+        let editBtn = document.querySelector('#edit')
+        let editOKBtn = document.querySelector('#editOK')
+        editBtn.addEventListener('click', (e) => {
+            document.querySelector('#oldpassword').setAttribute("style", "display: inline;")
+            document.querySelector('#editOK').setAttribute("style", "display: inline;")
+        })
+        editOKBtn.addEventListener('click', (e) => {
+            updateData()
+        })
+
+        let server = "http://10.1.1.7:3000"
+        fetch(`${server}/users`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${getToken()}`,
+                "Content-Type": "application/json"
+            }
+        }).then(data => {
+            return data.json()
+        }).then(file => {
+            console.log(file)
+            email.value = file.data.email
+            nickname.value = file.data.nickname
+            if (!file.data.phone) {
+                phone.setAttribute("placeholder", "未填寫手機號碼")
+            } else {
+                phone.value = file.data.phone
+            }
+        })
+
+        if (getCookie('token') == false) {
+            alert('尚未登入')
+            location.href = './index.html'
+        }
+        function getCookie(cookieName) {
+            let name = `${cookieName}=`
+            let AllCookie = document.cookie.split(';')
+            return AllCookie.some(item => item.trim().indexOf(name) == 0)
+        }
+        function getToken() {
+            return document.cookie.split(";")[0].split("token=")[1]
+        }
+        function updateData() {
+            fetch(`${server}/users/edit`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${getToken()}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "nickname": nickname.value,
+                    "phone": phone.value,
+                    "oldpassword": document.querySelector('#oldpassword').value
+                })
+            }).then(data => {
+                return data.json()
+            }).then(file => {
+                alert(file.msg)
+                location.reload()
+            })
+        }
+    </script>
+</body>
+
+</html>
